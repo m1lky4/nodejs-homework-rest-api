@@ -1,7 +1,13 @@
 
 const express = require('express');
 const router = express.Router();
-
+const {
+  listContacts,
+  getById,
+  addContact,
+  removeContact,
+  updateContact,
+} = require('../../models/contacts');
 
 router.get('/', async (req, res, next) => {
   try {
