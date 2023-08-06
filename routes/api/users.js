@@ -3,6 +3,7 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../../models/user');
+const authMiddleware = require('../../middleware/auth');
 
 router.post('/register', async (req, res) => {
   const { email, password } = req.body;
@@ -40,21 +41,10 @@ router.post('/login', async (req, res) => {
   }
 });
 
-router.post('/logout', async (req, res) => {
+router.post('/logout', authMiddleware, async (req, res) => {
   try {
-    const token = req.headers.authorization?.replace('Bearer ', '');
-    if (!token) {
-      return res.status(401).json({ message: 'Not authorized' });
-    }
-
-    const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findById(decodedToken.userId);
-    if (!user || user.token !== token) {
-      return res.status(401).json({ message: 'Not authorized' });
-    }
-
-    user.token = null;
-    await user.save();
+    req.user.token = null;
+    await req.user.save();
 
     res.status(204).end();
   } catch (error) {
@@ -62,20 +52,9 @@ router.post('/logout', async (req, res) => {
   }
 });
 
-router.get('/current', async (req, res) => {
+router.get('/current', authMiddleware, async (req, res) => {
   try {
-    const token = req.headers.authorization?.replace('Bearer ', '');
-    if (!token) {
-      return res.status(401).json({ message: 'Not authorized' });
-    }
-
-    const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findById(decodedToken.userId);
-    if (!user || user.token !== token) {
-      return res.status(401).json({ message: 'Not authorized' });
-    }
-
-    res.status(200).json({ email: user.email, subscription: user.subscription });
+    res.status(200).json({ email: req.user.email, subscription: req.user.subscription });
   } catch (error) {
     res.status(500).json({ message: 'Internal server error' });
   }
