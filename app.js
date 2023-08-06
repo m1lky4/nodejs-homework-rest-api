@@ -1,16 +1,28 @@
 const express = require('express');
-const logger = require('morgan');
+const mongoose = require('mongoose');
 const cors = require('cors');
 const contactsRouter = require('./routes/api/contacts');
 const usersRouter = require('./routes/api/users');
 
 const app = express();
+const PORT = 3000;
 
-const formatsLogger = app.get('env') === 'development' ? 'dev' : 'short';
+mongoose.connect(process.env.MONGODB_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
+  .then(() => {
+    console.log('Database connection successful');
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+  })
+  .catch((error) => {
+    console.error('Database connection error:', error);
+  });
 
-app.use(logger(formatsLogger));
-app.use(cors());
 app.use(express.json());
+app.use(cors());
 
 app.use('/api/contacts', contactsRouter);
 app.use('/api/users', usersRouter);
