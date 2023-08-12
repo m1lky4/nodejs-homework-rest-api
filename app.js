@@ -5,11 +5,13 @@ const contactsRouter = require('./routes/api/contacts');
 const usersRouter = require('./routes/api/users');
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT
 
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
+  useCreateIndex: true,
+  useFindAndModify: false,
 })
   .then(() => {
     console.log('Database connection successful');
@@ -26,6 +28,8 @@ app.use(cors());
 
 app.use('/api/contacts', contactsRouter);
 app.use('/api/users', usersRouter);
+
+app.use('/avatars', express.static('public/avatars'));
 
 app.use((req, res) => {
   res.status(404).json({ message: 'Not found' });
