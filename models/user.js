@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
-
+const md5 = require('md5');
 const userSchema = new mongoose.Schema(
   {
     email: {
@@ -18,6 +18,7 @@ const userSchema = new mongoose.Schema(
       default: 'starter',
     },
     token: String,
+    avatarURL: String,
   },
   { versionKey: false }
 );
@@ -31,6 +32,10 @@ userSchema.pre('save', async function (next) {
 
 userSchema.methods.isValidPassword = async function (password) {
   return await bcrypt.compare(password, this.password);
+};
+
+userSchema.methods.setAvatarURL = function (email) {
+  this.avatarURL = `https://www.gravatar.com/avatar/${md5(email)}?d=identicon`;
 };
 
 const User = mongoose.model('User', userSchema);
