@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const md5 = require('md5');
+
 const userSchema = new mongoose.Schema(
   {
     email: {

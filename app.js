@@ -5,7 +5,7 @@ const contactsRouter = require('./routes/api/contacts');
 const usersRouter = require('./routes/api/users');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT
 
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
